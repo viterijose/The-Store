@@ -6,175 +6,175 @@ var connection = mysql.createConnection({
     port: 3306,
     user: "root", //Your username
     password: "", //Your password
-    database: "bamazon"
+    database: "The-store"
 })
 
-connection.connect(function(err){
-  if (err) throw err;
-  console.log("connected as id " + connection.threadId);
-  start();
+connection.connect(function (err) {
+    if (err) throw err;
+    console.log("connected as id " + connection.threadId);
+    start();
 })
 
 
 
 
-function start(){
-  connection.query('SELECT * FROM Products', function(err, res){
-    inquirer.prompt({
-        name: "action",
-        type: "list",
-        message: "What would you like to do?",
-        choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product"]
-    }).then(function(answer){
-      switch(answer.action) {
-        case 'View Products for Sale':
-          displayProducts();
-          break;
+function start() {
+    connection.query('SELECT * FROM Products', function (err, res) {
+        inquirer.prompt({
+            name: "action",
+            type: "list",
+            message: "What would you like to do?",
+            choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product"]
+        }).then(function (answer) {
+            switch (answer.action) {
+                case 'View Products for Sale':
+                    displayProducts();
+                    break;
 
-        case 'View Low Inventory':
-          displayLowInventory();
-          break;
+                case 'View Low Inventory':
+                    displayLowInventory();
+                    break;
 
-        case 'Add to Inventory':
-        addToInventory();
-        break;
+                case 'Add to Inventory':
+                    addToInventory();
+                    break;
 
-        case 'Add New Product':
-        AddNewProduct();
-        break;
-        }
-    })
+                case 'Add New Product':
+                    AddNewProduct();
+                    break;
+            }
+        })
 
 
-    var displayProducts = function(){
+        var displayProducts = function () {
 
-      console.log("----------------------------");
-      for (var i = 0; i < res.length; i++) {
-        console.log(res[i].ID + " | " + res[i].ProductName + " | " + "$" + res[i].Price + " | " + res[i].StockQuantity + " | ");
-      }
-      console.log("----------------------------");
-      start();
-    }
-
-    var displayLowInventory = function (){
-        console.log("----------------------------");
-        for (var i = 0; i < res.length; i++) {
-          if(res[i].StockQuantity <= 5){
-            console.log(res[i].ID + " | " + res[i].ProductName + " | " + "$" + res[i].Price + " | " + res[i].StockQuantity + " | ");
             console.log("----------------------------");
-          }
+            for (var i = 0; i < res.length; i++) {
+                console.log(res[i].ID + " | " + res[i].ProductName + " | " + "$" + res[i].Price + " | " + res[i].StockQuantity + " | ");
+            }
+            console.log("----------------------------");
+            start();
         }
 
-        start();
-    }
-
-
-    var addToInventory = function(){
-      console.log('\n-------------------------------------');
-        inquirer.prompt([{
-          name: "idBuy",
-          type: "input",
-          message: "What is the ID of the product you would like to update?",
-          validate: function(value){
-          if(isNaN(value) == false && parseInt(value) <= res.length && parseInt(value) > 0){
-            return true;
-          } else{
-            return false;
-          }
-          }
-      }, {
-          name: "numUnits",
-          type: "input",
-          message: "What is the number of units you would like to add?",
-          validate: function(value){
-          if(isNaN(value)){
-            return false;
-          } else{
-            return true;
-          }
-
-          }
-    }]).then(function(answer){
-      var productID = (answer.idBuy) - 1;
-      var numberOfUnits = parseInt(answer.numUnits);
-
-      connection.query('UPDATE products SET ? WHERE ?', [
-              {StockQuantity: (res[productID].StockQuantity + numberOfUnits)},
-              {ID: answer.idBuy}
-            ], function(err, res){
-              if (err) throw err;
-      });
-
-      for (var i = 0; i < res.length; i++) {
-      
-                if(res[i].ID == answer.idBuy){
-                  console.log("----------------------------");
-                  console.log('You now have ' + numberOfUnits + ' more ' + res[i].ProductName + ' units');
-                console.log("----------------------------");
+        var displayLowInventory = function () {
+            console.log("----------------------------");
+            for (var i = 0; i < res.length; i++) {
+                if (res[i].StockQuantity <= 5) {
+                    console.log(res[i].ID + " | " + res[i].ProductName + " | " + "$" + res[i].Price + " | " + res[i].StockQuantity + " | ");
+                    console.log("----------------------------");
                 }
-      }
+            }
 
-      start();
-
-    })
-
-
-    }
-
-    var AddNewProduct =function(){
-      inquirer.prompt([{
-        name: "newProduct",
-        type: "input",
-        message: "What is the name of the product you would like to add?"
-      },
-      {
-        name: "depName",
-        type: "input",
-        message: "What department would you like to add the product to?"
-      },
-      {
-        name: "prodPrice",
-          type: "input",
-          message: "What is the price of the product?",
-          validate: function(value){
-          if(isNaN(value)){
-            return false;
-          } else{
-            return true;
+            start();
         }
 
+
+        var addToInventory = function () {
+            console.log('\n-------------------------------------');
+            inquirer.prompt([{
+                name: "idBuy",
+                type: "input",
+                message: "What is the ID of the product you would like to update?",
+                validate: function (value) {
+                    if (isNaN(value) == false && parseInt(value) <= res.length && parseInt(value) > 0) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            }, {
+                name: "numUnits",
+                type: "input",
+                message: "What is the number of units you would like to add?",
+                validate: function (value) {
+                    if (isNaN(value)) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+
+                }
+            }]).then(function (answer) {
+                var productID = (answer.idBuy) - 1;
+                var numberOfUnits = parseInt(answer.numUnits);
+
+                connection.query('UPDATE products SET ? WHERE ?', [
+                    { StockQuantity: (res[productID].StockQuantity + numberOfUnits) },
+                    { ID: answer.idBuy }
+                ], function (err, res) {
+                    if (err) throw err;
+                });
+
+                for (var i = 0; i < res.length; i++) {
+
+                    if (res[i].ID == answer.idBuy) {
+                        console.log("----------------------------");
+                        console.log('You now have ' + numberOfUnits + ' more ' + res[i].ProductName + ' units');
+                        console.log("----------------------------");
+                    }
+                }
+
+                start();
+
+            })
+
+
         }
-      },
-      {
-        name: "numAdd",
-        type: "input",
-        message: "How many units would you like to add?",
-        validate: function(value){
-        if(isNaN(value)){
-          return false;
-        } else{
-          return true;
-      }
 
-      }
-      }]).then(function(answer){
-        connection.query('INSERT INTO products SET ?', {
-          ProductName: answer.newProduct,
-          DepartmentName: answer.depName,
-          Price: answer.prodPrice,
-          StockQuantity: answer.numAdd
-        }, function(err, res){
-          if(err) throw err;
-          console.log("-------------------------");
-          console.log("You have just added " + answer.numAdd + " " + answer.newProduct + " units at $" + answer.prodPrice + " each.")
-          console.log("-------------------------");
-          start();
-        });
+        var AddNewProduct = function () {
+            inquirer.prompt([{
+                name: "newProduct",
+                type: "input",
+                message: "What is the name of the product you would like to add?"
+            },
+            {
+                name: "depName",
+                type: "input",
+                message: "What department would you like to add the product to?"
+            },
+            {
+                name: "prodPrice",
+                type: "input",
+                message: "What is the price of the product?",
+                validate: function (value) {
+                    if (isNaN(value)) {
+                        return false;
+                    } else {
+                        return true;
+                    }
 
-      })
+                }
+            },
+            {
+                name: "numAdd",
+                type: "input",
+                message: "How many units would you like to add?",
+                validate: function (value) {
+                    if (isNaN(value)) {
+                        return false;
+                    } else {
+                        return true;
+                    }
 
-    }
+                }
+            }]).then(function (answer) {
+                connection.query('INSERT INTO products SET ?', {
+                    ProductName: answer.newProduct,
+                    DepartmentName: answer.depName,
+                    Price: answer.prodPrice,
+                    StockQuantity: answer.numAdd
+                }, function (err, res) {
+                    if (err) throw err;
+                    console.log("-------------------------");
+                    console.log("You have just added " + answer.numAdd + " " + answer.newProduct + " units at $" + answer.prodPrice + " each.")
+                    console.log("-------------------------");
+                    start();
+                });
 
-  });
+            })
+
+        }
+
+    });
 
 }
