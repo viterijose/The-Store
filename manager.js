@@ -6,7 +6,7 @@ var connection = mysql.createConnection({
     port: 3306,
     user: "root", //Your username
     password: "password", //Your password
-    database: "The-store"
+    database: "bamazon"
 })
 
 connection.connect(function (err) {
@@ -19,7 +19,7 @@ connection.connect(function (err) {
 
 
 function start() {
-    connection.query('SELECT * FROM Products', function (err, res) {
+    connection.query('SELECT * FROM products', function (err, res) {
         inquirer.prompt({
             name: "action",
             type: "list",
@@ -50,7 +50,7 @@ function start() {
 
             console.log("----------------------------");
             for (var i = 0; i < res.length; i++) {
-                console.log(res[i].ID + " | " + res[i].ProductName + " | " + "$" + res[i].Price + " | " + res[i].StockQuantity + " | ");
+                console.log(res[i].id + " \t| " + res[i].product_name + " | " + "$" + res[i].price + " | " + res[i].stock_quantity + " | ");
             }
             console.log("----------------------------");
             start();
@@ -60,7 +60,7 @@ function start() {
             console.log("----------------------------");
             for (var i = 0; i < res.length; i++) {
                 if (res[i].StockQuantity <= 5) {
-                    console.log(res[i].ID + " | " + res[i].ProductName + " | " + "$" + res[i].Price + " | " + res[i].StockQuantity + " | ");
+                    console.log(res[i].id + " \t| " + res[i].product_name + " | " + "$" + res[i].price + " | " + res[i].stock_quantity + " | ");
                     console.log("----------------------------");
                 }
             }
@@ -99,8 +99,8 @@ function start() {
                 var numberOfUnits = parseInt(answer.numUnits);
 
                 connection.query('UPDATE products SET ? WHERE ?', [
-                    { StockQuantity: (res[productID].StockQuantity + numberOfUnits) },
-                    { ID: answer.idBuy }
+                    { stock_quantity: (res[productID].stock_quantity + numberOfUnits) },
+                    { id: answer.idBuy }
                 ], function (err, res) {
                     if (err) throw err;
                 });
@@ -159,10 +159,10 @@ function start() {
                 }
             }]).then(function (answer) {
                 connection.query('INSERT INTO products SET ?', {
-                    ProductName: answer.newProduct,
-                    DepartmentName: answer.depName,
-                    Price: answer.prodPrice,
-                    StockQuantity: answer.numAdd
+                    productName: answer.newProduct,
+                    departmentName: answer.depName,
+                    price: answer.prodPrice,
+                    stock_quantity: answer.numAdd
                 }, function (err, res) {
                     if (err) throw err;
                     console.log("-------------------------");
