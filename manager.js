@@ -107,9 +107,9 @@ function start() {
 
                 for (var i = 0; i < res.length; i++) {
 
-                    if (res[i].ID == answer.idBuy) {
+                    if (res[i].id == answer.idBuy) {
                         console.log("----------------------------");
-                        console.log('You now have ' + numberOfUnits + ' more ' + res[i].ProductName + ' units');
+                        console.log('You now have ' + numberOfUnits + ' more ' + res[i].product_name + ' units');
                         console.log("----------------------------");
                     }
                 }
@@ -159,8 +159,8 @@ function start() {
                 }
             }]).then(function (answer) {
                 connection.query('INSERT INTO products SET ?', {
-                    productName: answer.newProduct,
-                    departmentName: answer.depName,
+                    product_name: answer.newProduct,
+                    department_name: answer.depName,
                     price: answer.prodPrice,
                     stock_quantity: answer.numAdd
                 }, function (err, res) {
