@@ -1,7 +1,7 @@
 use bamazon;
 
 INSERT INTO products (product_name, department_name, price,stock_quantity)
-VALUES ("Adafruit Mini Push-Pull Solenoid - 5V ", "Electronics", 8.99,10);
+VALUES ("Adafruit Mini Push-Pull Solenoid - 5V ", "Electronics", 8.99,3);
 
 INSERT INTO products (product_name, department_name, price,stock_quantity)
 VALUES ("3x6x2.5 mm Miniature Steel Bearings","Sports & Outdoors", 8.39,20);

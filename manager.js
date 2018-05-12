@@ -59,7 +59,7 @@ function start() {
         var displayLowInventory = function () {
             console.log("----------------------------");
             for (var i = 0; i < res.length; i++) {
-                if (res[i].StockQuantity <= 5) {
+                if (res[i].stock_quantity <= 5) {
                     console.log(res[i].id + " \t| " + res[i].product_name + " | " + "$" + res[i].price + " | " + res[i].stock_quantity + " | ");
                     console.log("----------------------------");
                 }
