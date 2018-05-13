@@ -12,68 +12,71 @@ var connection = mysql.createConnection({
 connection.connect(function (err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId);
+
 })
 
 connection.query('SELECT * FROM Products', function (err, res) {
+
+
     console.log("----------------------------");
     for (var i = 0; i < res.length; i++) {
         console.log(res[i].id + ".- \t " + res[i].product_name + " | " + "$" + res[i].price + " | " + res[i].stock_quantity + " | ");
     }
     console.log("----------------------------");
-
     var start = function () {
-        console.log('\n-------------------------------------');
-        inquirer.prompt([{
-            name: "idBuy",
-            type: "input",
-            message: "What is the ID of the product you would like to buy?",
-            validate: function (value) {
-                if (isNaN(value) == false && parseInt(value) <= res.length && parseInt(value) > 0) {
-                    return true;
-                } else {
-                    return false;
+        {
+            console.log('\n-------------------------------------');
+            inquirer.prompt([{
+                name: "idBuy",
+                type: "input",
+                message: "What is the ID of the product you would like to buy?",
+                validate: function (value) {
+                    if (isNaN(value) == false && parseInt(value) <= res.length && parseInt(value) > 0) {
+                        return true;
+                    } else {
+                        return false;
+                    }
                 }
-            }
-        }, {
-            name: "numUnits",
-            type: "input",
-            message: "What is the number of units you would like to buy?",
-            validate: function (value) {
-                if (isNaN(value)) {
-                    return false;
-                } else {
-                    return true;
+            }, {
+                name: "numUnits",
+                type: "input",
+                message: "What is the number of units you would like to buy?",
+                validate: function (value) {
+                    if (isNaN(value)) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+
                 }
+            }]).then(function (answer) {
+                var productID = (answer.idBuy) - 1;
+                var numberOfUnits = parseInt(answer.numUnits);
+                var total = parseFloat((res[productID].price) * numberOfUnits);
 
-            }
-        }]).then(function (answer) {
-            var productID = (answer.idBuy) - 1;
-            var numberOfUnits = parseInt(answer.numUnits);
-            var total = parseFloat((res[productID].Price) * numberOfUnits);
+                if (res[productID].stock_quantity >= numberOfUnits) {
 
-            if (res[productID].StockQuantity >= numberOfUnits) {
+                    connection.query('UPDATE products SET ? WHERE ?', [
+                        { stock_quantity: (res[productID].stock_quantity - numberOfUnits) },
+                        { id: answer.idBuy }
+                    ], function (err, res) {
 
-                connection.query('UPDATE products SET ? WHERE ?', [
-                    { StockQuantity: (res[productID].StockQuantity - numberOfUnits) },
-                    { ID: answer.idBuy }
-                ], function (err, res) {
+                        if (err) throw err;
+                        console.log('\n-------------------------------------');
+                        console.log("\nYour total is $" + total.toFixed(2));
+                        console.log('-------------------------------------');
+                        start();
+                    });
 
-                    if (err) throw err;
+                } else {
                     console.log('\n-------------------------------------');
-                    console.log("\nYour total is $" + total.toFixed(2));
-                    console.log('-------------------------------------');
+                    console.log("Sorry, there is not enough units in stock!");
+                    console.log('\n-------------------------------------');
                     start();
-                });
-
-            } else {
-                console.log('\n-------------------------------------');
-                console.log("Sorry, there is not enough units in stock!");
-                console.log('\n-------------------------------------');
-                start();
-            }
-            // start();
-        });
+                }
+                // start();
+            });
+        }
     }
-
     start();
 })
